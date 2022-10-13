@@ -1,25 +1,21 @@
 //© 2021 Sean Murdock
 
-let userName = "";
-let password = "";
-let verifypassword = "";
-let passwordRegEx=/((?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%!]).{6,40})/;
+let phonenumber = "";
+let onetimepassword = "";
+let verifyonetimepassword = "";
+let onetimepasswordRegEx=/((?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%!]).{6,40})/;
 
-function setusername(){
-    userName = $("#username").val();
+function setphonenumber(){
+    phonenumber = $("#phonenumber").val();
 }
 
-function setuserpassword(){
-    password = $("#password").val();
-    var valid=passwordRegEx.exec(password);
-    if (!valid){
-        alert('Must be 6 digits, upper, lower, number, and symbol');
-    }
+function setusernetimepassword(){
+    onetimepassword = $("#onetimepassword").val();
 }
 
 function setverifypassword(){
-    verifypassword = $("#verifypassword").val();
-    if (verifypassword!=password){
+    verifyonetimepassword = $("#verifyonetimepassword").val();
+    if (verifyonetimepassword!=onetimepassword){
         alert('Passwords must be entered the same twice');
     }
 }
@@ -45,14 +41,24 @@ function checkexpiredtoken(token){
         dataType: 'text' })
     }
 }
-
-function userlogin(){
-    setuserpassword();
-    setusername();
+const sendtext =()=>{
+    setuseronetimepassword();
+    setphonenumber();
     $.ajax({
         type: 'POST',
-        url: '/login',
-        data: JSON.stringify({userName, password}),
+        url: 'https://dev.stedi.me/twofactorlogin'+phonenumber,
+        contentType: "application/text",
+        dataType: 'text'
+    });
+
+}
+function userlogin(){
+    setuseronetimepassword();
+    setphonenumber();
+    $.ajax({
+        type: 'POST',
+        url: 'https://dev.stedi.me/login',
+        data: JSON.stringify({phonenumber, password}),
         success: function(data) {
             window.location.href = "/timer.html#"+data;//add the token to the url
         },
@@ -93,7 +99,7 @@ function createuser(){
     $.ajax({
         type: 'POST',
         url: '/user',
-        data: JSON.stringify({userName, 'email': userName, password, 'verifyPassword': vpwd, 'accountType':'Personal'}),//we are using the email as the user name
+        data: JSON.stringify({phonenumber, 'email': phonenumber, onetimepassword, 'verifyPassword': vpwd, 'accountType':'Personal'}),//we are using the email as the user name
         success: function(data) { alert(data);
 //        readonlyforms("newUser");
 //        alert(readonlyforms("newUser"));
@@ -123,6 +129,6 @@ var enterFunction = (event) =>{
     }
 }
 
-var passwordField = document.getElementById("password");
+var onetimepasswordField = document.getElementById("onetimepassword");
 
-passwordField.addEventListener("keyup", enterFunction);
+onetimepasswordField.addEventListener("keyup", enterFunction);
